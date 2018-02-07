@@ -90,7 +90,7 @@ function loadEarthquakelayer(earthquakedata){
 	mymap.fitBounds(earthquakelayer.getBounds());
 }
 
-//load the map data (earthquake) after the page has loaded	
-document.addEventListener('DOMContentLoaded',function(){
-	getEarthquakes();
-},false);
+// //load the map data (earthquake) after the page has loaded	
+// document.addEventListener('DOMContentLoaded',function(){
+	// getEarthquakes();
+// },false);
