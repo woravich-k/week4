@@ -1,0 +1,52 @@
+{
+  "prepare_queue": {
+    "installed": [],
+    "uninstalled": []
+  },
+  "config_munge": {
+    "files": {}
+  },
+  "installed_plugins": {
+    "cordova-plugin-whitelist": {
+      "PACKAGE_NAME": "leafletwithfullTemplate"
+    },
+    "cordova-plugin-battery-status": {
+      "PACKAGE_NAME": "leafletwithfullTemplate"
+    },
+    "cordova-plugin-camera": {
+      "PACKAGE_NAME": "leafletwithfullTemplate"
+    },
+    "cordova-plugin-media-capture": {
+      "PACKAGE_NAME": "leafletwithfullTemplate"
+    },
+    "cordova-plugin-device": {
+      "PACKAGE_NAME": "leafletwithfullTemplate"
+    },
+    "cordova-plugin-dialogs": {
+      "PACKAGE_NAME": "leafletwithfullTemplate"
+    },
+    "cordova-plugin-geolocation": {
+      "PACKAGE_NAME": "leafletwithfullTemplate"
+    },
+    "cordova-plugin-globalization": {
+      "PACKAGE_NAME": "leafletwithfullTemplate"
+    },
+    "cordova-plugin-inappbrowser": {
+      "PACKAGE_NAME": "leafletwithfullTemplate"
+    },
+    "cordova-plugin-network-information": {
+      "PACKAGE_NAME": "leafletwithfullTemplate"
+    },
+    "cordova-plugin-vibration": {
+      "PACKAGE_NAME": "leafletwithfullTemplate"
+    }
+  },
+  "dependent_plugins": {
+    "cordova-plugin-compat": {
+      "PACKAGE_NAME": "leafletwithfullTemplate"
+    },
+    "cordova-plugin-file": {
+      "PACKAGE_NAME": "leafletwithfullTemplate"
+    }
+  }
+}
