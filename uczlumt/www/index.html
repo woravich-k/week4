@@ -67,6 +67,11 @@
 	<script src="https://unpkg.com/leaflet@1.1.0/dist/leaflet.js" integrity = "sha512-mNqn2Wg7tSToJhvHcqfzLMU6J4mkOImSPTxVZAdo+lcPlk+GhZmYgACEe0x35K7YzW1zJ7XyJV/TT1MrdXvMcA==" crossorigin="">
 	</script>
 	
+	<!--the following links incorporate the CSS required for custom icon creation-->
+	<link rel="stylesheet" href ="css/ionicons.min.css"/>
+	<link rel="stylesheet" href = "css/leaflet.awesome-markers.css"/>
+	<script src ="js/leaflet.awesome-markers.js"></script>
+	
     
   </head>
   <body>
@@ -115,7 +120,7 @@
           <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">home</i>Home</a>
           <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">inbox</i>Inbox</a>
           <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">delete</i>Trash</a>
-          <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">report</i>Spam</a>
+          <a class="mdl-navigation__link" href="" onclick = "getEarthquakes();return false"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">report</i>Get Earthquakes</a>
           <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">forum</i>Forums</a>
           <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">flag</i>Updates</a>
           <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">local_offer</i>Promos</a>
@@ -130,6 +135,7 @@
           <div class="demo-charts mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
             <!-- Pie chart Div -->
 			<div id = "mapid" style="width: 600px;height: 500px;"></div>
+			
           </div>
           
          
@@ -139,19 +145,6 @@
       </main>
     </div>
       
-    <!-- <!-- the following script will load the map and set the default view and zoom, as well as loading the basemap tiles--> -->
-	<!-- <script> -->
-		<!-- //load the map -->
-		<!-- var mymap = L.map('mapid').setView([51.505,-0.09],13); -->
-		
-		<!-- //load the tiles -->
-		<!-- L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw',{ -->
-			<!-- maxZoom: 18, -->
-			<!-- attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors,'+'<a href="http://creativecommons.org/licenses/by-sa/2.0/"> CC-BY-SA</a>,'+'imagery &copy; <a href="http://mapbox.com">Mapbox</a>',  -->
-			<!-- id: 'mapbox.streets' -->
-			<!-- }).addTo(mymap); -->
-		
-	<!-- </script>   -->
     <script src="./js/appActivity.js"></script> 
     <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
   </body>
