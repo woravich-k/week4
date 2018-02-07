@@ -1,5 +1,7 @@
 //load the map
 var mymap = L.map('mapid').setView([51.505,-0.09],13);
+
+
 		
 //load the tiles
 L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw',{
@@ -88,9 +90,60 @@ function loadEarthquakelayer(earthquakedata){
 	
 	//change the map zoom so that all the data is shown
 	mymap.fitBounds(earthquakelayer.getBounds());
+	autoPan = false;
+	
 }
 
 // //load the map data (earthquake) after the page has loaded	
 // document.addEventListener('DOMContentLoaded',function(){
 	// getEarthquakes();
 // },false);
+
+
+//Tracking location
+var currentLocationLyr;
+var firstTime = true
+var previousBound
+var autoPan = true
+
+function trackLocation() {
+	if (!firstTime){
+	// zoom to center
+		mymap.flyToBounds(currentLocationLyr.getLatLng().toBounds(250));
+		mymap.on('zoomend', function() {
+			autoPan = true;
+		});
+		
+	} else {
+		autoPan = true;
+		if (navigator.geolocation) {
+			alert("Getting current location");
+			navigator.geolocation.watchPosition(showPosition);
+			
+			
+		} else {
+			alert("Geolocation is not supported by this browser.");
+		}
+	}
+}
+
+function showPosition(position) {
+
+	if(!firstTime){
+		mymap.removeLayer(currentLocationLyr);
+	}
+	currentLocationLyr = L.marker([position.coords.latitude,position.coords.longitude]).addTo(mymap);
+	
+	if(firstTime){
+		mymap.flyToBounds(currentLocationLyr.getLatLng().toBounds(250));
+		firstTime = false;
+	}else if (autoPan) {
+		mymap.panTo(currentLocationLyr.getLatLng());
+		
+	}	
+}
+
+//turn off autoPan when user drag the map.
+mymap.on('dragstart', function() {
+	autoPan = false;
+})
