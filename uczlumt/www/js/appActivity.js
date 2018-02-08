@@ -9,35 +9,47 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=p
 	attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors,'+'<a href="http://creativecommons.org/licenses/by-sa/2.0/"> CC-BY-SA</a>,'+'imagery &copy; <a href="http://mapbox.com">Mapbox</a>', 
 	id: 'mapbox.streets'
 	}).addTo(mymap);
-	
-	
-// //add a point
-// L.marker([51.5,-0.09]).addTo(mymap).bindPopup("<b>Hello world!</b><br/>I am a popup.<br/><a href='http://www.ucl.ac.uk'>Go to UCL website</a>").openPopup();
-		
+
+var UCL;
+var UCLbox = document.getElementById("UCLbox");	
+function UCLpoint()	{
+//add a point
+	if (UCLbox.checked){
+		UCL = L.marker([51.5,-0.09]).addTo(mymap).bindPopup("<b>Hello world!</b><br/>I am a popup.<br/><a href='http://www.ucl.ac.uk'>Go to UCL website</a>").openPopup();
+		mymap.flyToBounds(UCL.getLatLng().toBounds(500));
+		autoPan = false;
+	} else {
+		mymap.removeLayer(UCL);
+	}
+}	
 // //add a circle
-// L.circle([51.508,-0.11],500,{
-	// color: 'red',
-	// fillColor: '#f03',
-	// fillOpacity: 0.5
-// }).addTo(mymap).bindPopup("I am a circle.");
+	
+function addCircle(){
+	L.circle([51.508,-0.11],500,{
+		color: 'red',
+		fillColor: '#f03',
+		fillOpacity: 0.5
+	}).addTo(mymap).bindPopup("I am a circle.");
+}
 		
-// //add a polygon with 3 end points (i.e. a triangle)
-// var myPolygon = L.polygon([
-	// [51.509,-0.08], 
-	// [51.503,-0.06], 
-	// [51.51,-0.047]
-// ],{
-	// color: 'blue',
-	// fillColor: '#096aea',
-	// fillOpacity: 0.2
-// }).addTo(mymap).bindPopup("I am a polygon.");
+//add a polygon with 3 end points (i.e. a triangle)
+function addPolygon(){
+	var myPolygon = L.polygon([
+		[51.509,-0.08], 
+		[51.503,-0.06], 
+		[51.51,-0.047]
+	],{
+		color: 'blue',
+		fillColor: '#096aea',
+		fillOpacity: 0.2
+	}).addTo(mymap).bindPopup("I am a polygon.");
+}
 
-
-//create a variable that will hold the XMLHttpRequest() - this must be done outside a function so that all the functions  can use the sam variable
-var client;
+// //create a variable that will hold the XMLHttpRequest() - this must be done outside a function so that all the functions  can use the sam variable
+// var client;
 		
-//and a variable that will hold the layer itself - we need to do this outside the function so that we can use it to remove the layer later on
-var earthquakelayer;
+// //and a variable that will hold the layer itself - we need to do this outside the function so that we can use it to remove the layer later on
+// var earthquakelayer;
 
 // create icon template
 var testMarkerRed = L.AwesomeMarkers.icon({
@@ -49,62 +61,164 @@ var testMarkerPink = L.AwesomeMarkers.icon({
 	markerColor: 'pink'
 });
 		
+// //create the code to get the Earthquakes data using an XMLHttpRequest
+// function getEarthquakes(){
+	// client = new XMLHttpRequest();
+	// client.open('GET','https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson');
+	// client.onreadystatechange = earthquakeResponse; //note don't use earthquakeResponse() with brackets as that doesn't work
+	// client.send();
+// }
+		
+// //create the code to wait for the response from the data server, and process the response once it is received
+// function earthquakeResponse(){
+// //this function listens out for the server to say that the data is ready - i.e. has state 4
+	// if (client.readyState == 4){
+	// //once the data is ready, process the data
+	// var earthquakedata = client.responseText;
+	// loadEarthquakelayer(earthquakedata);
+	// }
+// }
+		
+// //convert the received data - which is text - to JSON format and add it to the map
+// function loadEarthquakelayer(earthquakedata){
+	// //convert the text to JSON
+	// var earthquakejson = JSON.parse(earthquakedata);
+	
+	// //add the JSON layer onto the map it will appear using the default icons
+	// earthquakelayer = L.geoJson(earthquakejson,
+	// {
+		// //use point to layer to create the points
+		// pointToLayer: function(feature, latlng){
+			// //look at the GeoJSON filr - specifically at the properties - to see the earthquake magnitude and use a different marker depending on this value
+			// //also include a pop-up that shows the place value of the earthquakes 
+			// if (feature.properties.mag>1.75){
+				// return L.marker(latlng,{icon:testMarkerRed}).bindPopup("<b> location: "+feature.properties.place+"</b>");
+			// }else{
+			// //mag is lower than 1.75
+				// return L.marker(latlng,{icon:testMarkerPink}).bindPopup("<b> location: "+feature.properties.place+"</b>");
+			// }
+		// }
+	// }).addTo(mymap);
+	
+	// //change the map zoom so that all the data is shown
+	// mymap.fitBounds(earthquakelayer.getBounds());
+	// autoPan = false;
+	
+// }
+
+// // //load the map data (earthquake) after the page has loaded	
+// // document.addEventListener('DOMContentLoaded',function(){
+	// // getEarthquakes();
+// // },false);
+
+
+//create a variable that will hold the XMLHttpRequest() - this must be done outside a function so that all the functions  can use the sam variable
+var client;
+
+//and a variable that will hold the layer itself - we need to do this outside the function so that we can use it to remove the layer later on
+var earthquakelayer;
+var busstoplayer;
+
+//use as global variable as they will be used to remove layers and avoid duplicate layers.
+var loadingEarthquakes;
+var loadingBusstops;
+		
 //create the code to get the Earthquakes data using an XMLHttpRequest
-function getEarthquakes(){
+function getData(layername){
+	autoPan = false;
+	if (layername == "earthquakes" && !loadingEarthquakes){
+		url = 'https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson'
+	}else if (layername == "busstops" && !loadingBusstops){
+		url = 'data/busstops.geojson'
+	}else {
+		alert("The layer is not loaded to the map, since it has already been existed.")
+		return
+	}
+	alert("Loading")
 	client = new XMLHttpRequest();
-	client.open('GET','https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson');
-	client.onreadystatechange = earthquakeResponse; //note don't use earthquakeResponse() with brackets as that doesn't work
+	
+	client.open('GET', url);
+	client.onreadystatechange = dataResponse; //note don't use earthquakeResponse() with brackets as that doesn't work
 	client.send();
 }
-		
+
 //create the code to wait for the response from the data server, and process the response once it is received
-function earthquakeResponse(){
+function dataResponse(){
 //this function listens out for the server to say that the data is ready - i.e. has state 4
 	if (client.readyState == 4){
 	//once the data is ready, process the data
-	var earthquakedata = client.responseText;
-	loadEarthquakelayer(earthquakedata);
+	var geoJSONData = client.responseText;
+	loadLayer(geoJSONData);
 	}
 }
-		
+
+
 //convert the received data - which is text - to JSON format and add it to the map
-function loadEarthquakelayer(earthquakedata){
+function loadLayer(geoJSONData){
+	
 	//convert the text to JSON
-	var earthquakejson = JSON.parse(earthquakedata);
-	
-	//add the JSON layer onto the map it will appear using the default icons
-	earthquakelayer = L.geoJson(earthquakejson,
-	{
-		//use point to layer to create the points
-		pointToLayer: function(feature, latlng){
-			//look at the GeoJSON filr - specifically at the properties - to see the earthquake magnitude and use a different marker depending on this value
-			//also include a pop-up that shows the place value of the earthquakes 
-			if (feature.properties.mag>1.75){
-				return L.marker(latlng,{icon:testMarkerRed}).bindPopup("<b> location: "+feature.properties.place+"</b>");
-			}else{
-			//mag is lower than 1.75
-				return L.marker(latlng,{icon:testMarkerPink}).bindPopup("<b> location: "+feature.properties.place+"</b>");
+	var json = JSON.parse(geoJSONData);
+	//decide which layer do we load?
+	//avoid duplicate layers
+	if (geoJSONData.indexOf("earthquake")>0){
+		loadingEarthquakes = true;
+		earthquakelayer = L.geoJson(json,
+		{
+			//use point to layer to create the points
+			pointToLayer: function(feature, latlng){
+				//look at the GeoJSON filr - specifically at the properties - to see the earthquake magnitude and use a different marker depending on this value
+				//also include a pop-up that shows the place value of the earthquakes 
+				if (feature.properties.mag>1.75){
+					return L.marker(latlng,{icon:testMarkerRed}).bindPopup("<b> location: "+feature.properties.place+"</b>");
+				}else{
+				//mag is lower than 1.75
+					return L.marker(latlng,{icon:testMarkerPink}).bindPopup("<b> location: "+feature.properties.place+"</b>");
+				}
 			}
-		}
-	}).addTo(mymap);
+		}).addTo(mymap);
 	
-	//change the map zoom so that all the data is shown
-	mymap.fitBounds(earthquakelayer.getBounds());
-	autoPan = false;
-	
+		//change the map zoom so that all the data is shown
+		mymap.fitBounds(earthquakelayer.getBounds());
+	}else if (geoJSONData.indexOf("IIT_METHOD")>0){
+		loadingBusstops = true;
+		busstoplayer = L.geoJson(json).addTo(mymap)
+		// zoom to bus stops
+		mymap.fitBounds(busstoplayer.getBounds());
+	}
+
 }
 
-// //load the map data (earthquake) after the page has loaded	
-// document.addEventListener('DOMContentLoaded',function(){
-	// getEarthquakes();
-// },false);
+function removeData(layername){
+//check whether the layer is existed on the map or not if not inform the user.
+	if (layername == "earthquakes") {
+		if (loadingEarthquakes){
+			alert("removing the earthquake data here");
+			mymap.removeLayer(earthquakelayer);
+			loadingEarthquakes = false;
+		} else {
+			alert("There is no earthquake layer on the map");
+		}
+	}
+	if (layername == "busstops") {
+		if (loadingBusstops){
+			alert("removing the busstops data here");
+			mymap.removeLayer(busstoplayer);
+			loadingBusstops = false;
+		} else {
+			alert("There is no bus stop layer on the map");
+		}
+	}
+	
+}
+	
+
 
 
 //Tracking location
 var currentLocationLyr;
-var firstTime = true
-var previousBound
-var autoPan = false
+var firstTime = true;
+var previousBound;
+var autoPan = false;
 
 function trackLocation() {
 	if (!firstTime){
@@ -134,11 +248,9 @@ function showPosition(position) {
 	currentLocationLyr = L.marker([position.coords.latitude,position.coords.longitude]).addTo(mymap);
 	
 	if(firstTime){
-		mymap.flyToBounds(currentLocationLyr.getLatLng().toBounds(250));
-		mymap.on('zoomend', function() {
-			autoPan = true;
-		});
 		firstTime = false;
+		mymap.flyToBounds(currentLocationLyr.getLatLng().toBounds(250));
+		autoPan = true;
 	}else if (autoPan) {
 		mymap.panTo(currentLocationLyr.getLatLng());
 		
@@ -149,3 +261,7 @@ function showPosition(position) {
 mymap.on('dragstart', function() {
 	autoPan = false;
 })
+function alertAuto(){
+	alert(autoPan);
+	
+}
