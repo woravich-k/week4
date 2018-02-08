@@ -10,6 +10,7 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=p
 	id: 'mapbox.streets'
 	}).addTo(mymap);
 
+//UCL switch
 var UCL;
 var UCLbox = document.getElementById("UCLbox");	
 function UCLpoint()	{
@@ -21,7 +22,31 @@ function UCLpoint()	{
 	} else {
 		mymap.removeLayer(UCL);
 	}
-}	
+}
+
+//Earthquakes switch
+var EQbox = document.getElementById("EQbox");	
+function EQ()	{
+//add a point
+	if (EQbox.checked){
+		getData('earthquakes');
+	} else {
+		removeData('earthquakes');
+	}
+}
+
+//Bus switch
+var Busbox = document.getElementById("Busbox");	
+function bus()	{
+//add a point
+	if (Busbox.checked){
+		getData('busstops');
+	} else {
+		removeData('busstops');
+	}
+}
+
+	
 // //add a circle
 	
 function addCircle(){
