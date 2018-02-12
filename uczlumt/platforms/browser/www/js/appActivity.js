@@ -191,21 +191,41 @@ function alertAuto(){
 //	****** Distance alert functions ******
 
 //These parameters are used to decide when the application alerts user.
-var firstTimeDist = true;
-var inbound;
-var radius = 3.886
 var watch_dist;
+var firstTimeDist = true;
+var prev_closestPt = "";
+var inbound;
+var cutoffDist = 1; // kilometers
+var pts = [ [1,51.524616,-0.13818,"Warren Street"], //id, lat, lon, name
+			[2,51.5567,-0.1380,"Tufnell Park"],
+			[3,51.5592,-0.1342,"Tufnell House"] ];
 
 
 function trackDistance() {
 if (navigator.geolocation) {
-		watch_dist = navigator.geolocation.watchPosition(getDistanceFromPoint);
+		watch_dist = navigator.geolocation.watchPosition(getAlertFromPoints);
 	} else {
 		alert("Geolocation is not supported by this browser.");
 	}
 }
 
-function getDistanceFromPoint(position){
+
+function getAlertFromPoints(position){
+	var closestDist = cutoffDist;
+	var closestPt = "outside";
+	var curLat = position.coords.latitude;
+	var curLon = position.coords.longitude;
+	//find the closest point within the cut-off distance
+	for (var i = 0; i < pts.length; i++) {
+		if( closestDist > calculateDistance(curLat, curLon, pts[i][1], pts[i][2],'K')){
+			closestDist = calculateDistance(curLat, curLon, pts[i][1], pts[i][2],'K');
+			closestPt = pts[i][3];
+		}
+	}
+	if (prev_closestPt != closestPt){
+		alert("Your closest point is: " + closestPt);
+		prev_closestPt = closestPt
+	}
 	//find the coordinates of a point using this website:
 	//these are the coordinates for Warren Street
 	var lat = 51.524616;
@@ -214,26 +234,26 @@ function getDistanceFromPoint(position){
 	var distance = calculateDistance(position.coords.latitude,position.coords.longitude,lat,lon,'K');
 	//document.getElementById('showDistance').innerHTML =  "Distance:" +distance +"km";
 	
-	//alert the status if it is the first time and 
-	if (firstTimeDist == true){
-		firstTimeDist = false;
-		if (distance > radius){
-			inbound = false;
-			alert("You are outside the boundary");
-		} else {
-			inbound = true;
-			alert("You are inside the boundary");
-		}
-	} else { //alert when device travel out of or into the boundary
-		if ((inbound) && distance > radius) {
-			alert("You just travel out of the boundary");
-			inbound = false;
-		} else if ((!inbound) && distance <= radius) {
+	// //alert the status if it is the first time and 
+	// if (firstTimeDist == true){
+		// firstTimeDist = false;
+		// if (distance > radius){
+			// inbound = false;
+			// alert("You are outside the boundary");
+		// } else {
+			// inbound = true;
+			// alert("You are inside the boundary");
+		// }
+	// } else { //alert when device travel out of or into the boundary
+		// if ((inbound) && distance > radius) {
+			// alert("You just travel out of the boundary");
+			// inbound = false;
+		// } else if ((!inbound) && distance <= radius) {
 		
-			alert("You just travel into the boundary");
-			inbound = true;
-		}
-	}
+			// alert("You just travel into the boundary");
+			// inbound = true;
+		// }
+	// }
 }
 
 
@@ -312,7 +332,7 @@ function distAlert(){
 		trackDistance();
 	} else {
 		navigator.geolocation.clearWatch(watch_dist);
-		firstTimeDist = true;
+		prev_closestPt = "";
 		
 	}
 }
