@@ -177,7 +177,7 @@
         </header>
         <nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
 	  
-		   <!-- Rounded switch for current location-->
+		  <!-- Rounded switch for current location-->
 		  <div class = "mdl-navigation__link">
 		  <label class="switch">
 		    <input type="checkbox" id = "locationBox" onchange="currentLocation()">
@@ -185,6 +185,16 @@
 		  </label>
 		  <i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">my_location</i> 
 		   Location
+		  </div>
+		  
+		  <!-- Rounded switch for distAlert-->
+		  <div class = "mdl-navigation__link">
+		  <label class="switch">
+		    <input type="checkbox" id = "distBox" onchange="distAlert()">
+			<span class="slider round"></span>
+		  </label>
+		  <i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">my_location</i> 
+		   Dist. Alert
 		  </div>
 		  
 		  <a class="mdl-navigation__link" href="" onclick = "panToCurrentLoc();return false;"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">my_location</i>Pan to current location</a>
@@ -228,14 +238,14 @@
 		   Circle
 		  </div>
 		  
-		   <!-- Rounded switch for Polygon-->
+		  <!-- Rounded switch for Polygon-->
 		  <div class = "mdl-navigation__link">
 		  <label class="switch">
 		    <input type="checkbox" id = "poly_box" onchange="addPolygon()">
 			<span class="slider round"></span>
 		  </label>
 		  <i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">network_cell</i> 
-		   Circle
+		   Polygon
 		  </div>
           
         </nav>

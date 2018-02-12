@@ -1,8 +1,8 @@
+
+//							****** load simple map and define some icons ******
 //load the map
 var mymap = L.map('mapid').setView([51.505,-0.09],13);
-
-
-		
+	
 //load the tiles
 L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw',{
 	maxZoom: 18,
@@ -25,7 +25,11 @@ var testMarkerPink = L.AwesomeMarkers.icon({
 	icon: 'play',
 	markerColor: 'pink'
 });
-		
+
+
+
+//						****** Add/Remove Earthquakes and Bus Stops function *******
+ 					
 //create a variable that will hold the XMLHttpRequest() - this must be done outside a function so that all the functions  can use the sam variable
 var client;
 
@@ -65,7 +69,6 @@ function dataResponse(){
 	loadLayer(geoJSONData);
 	}
 }
-
 
 //convert the received data - which is text - to JSON format and add it to the map
 function loadLayer(geoJSONData){
@@ -127,10 +130,12 @@ function removeData(layername){
 	
 
 
-
+	
+	
+//						****** Showing current location functions ******
 //Tracking location
 var currentLocationLyr;
-var id;
+var trackLOC;
 var firstTime = true;
 var previousBound;
 var autoPan = false;
@@ -145,7 +150,7 @@ function trackLocation() {
 	} else {
 		if (navigator.geolocation) {
 			alert("Getting current location");
-			id = navigator.geolocation.watchPosition(showPosition);
+			trackLOC = navigator.geolocation.watchPosition(showPosition);
 			
 			
 		} else {
@@ -183,8 +188,81 @@ function alertAuto(){
 }
 
 
+//	****** Distance alert functions ******
+
+//These parameters are used to decide when the application alerts user.
+var firstTimeDist = true;
+var inbound;
+var radius = 3.886
+var watch_dist;
 
 
+function trackDistance() {
+if (navigator.geolocation) {
+		watch_dist = navigator.geolocation.watchPosition(getDistanceFromPoint);
+	} else {
+		alert("Geolocation is not supported by this browser.");
+	}
+}
+
+function getDistanceFromPoint(position){
+	//find the coordinates of a point using this website:
+	//these are the coordinates for Warren Street
+	var lat = 51.524616;
+	var lon = -0.13818;
+	//return the distance in kilometers
+	var distance = calculateDistance(position.coords.latitude,position.coords.longitude,lat,lon,'K');
+	//document.getElementById('showDistance').innerHTML =  "Distance:" +distance +"km";
+	
+	//alert the status if it is the first time and 
+	if (firstTimeDist == true){
+		firstTimeDist = false;
+		if (distance > radius){
+			inbound = false;
+			alert("You are outside the boundary");
+		} else {
+			inbound = true;
+			alert("You are inside the boundary");
+		}
+	} else { //alert when device travel out of or into the boundary
+		if ((inbound) && distance > radius) {
+			alert("You just travel out of the boundary");
+			inbound = false;
+		} else if ((!inbound) && distance <= radius) {
+		
+			alert("You just travel into the boundary");
+			inbound = true;
+		}
+	}
+}
+
+
+//code adapted from https//www.htmlgoodies.com/beyond/javascript/calculate-the-distance-between-two-points-in-your-web-apps.html
+function calculateDistance(lat1,lon1,lat2,lon2,unit){
+	var radlat1=Math.PI*lat1/180;
+	var radlat2=Math.PI*lat2/180;
+	var radlon1=Math.PI*lon1/180;
+	var radlon2=Math.PI*lon2/180;
+	var theta = lon1-lon2;
+	var radtheta = Math.PI * theta/180;
+	var subAngle = Math.sin(radlat1)*Math.sin(radlat2)+Math.cos(radlat1)*Math.cos(radlat2)*Math.cos(radtheta);
+	subAngle = Math.acos(subAngle);
+	subAngle = subAngle*180/Math.PI; //convert the degree value returned by acos back to degrees from radians
+	dist = (subAngle/360)*2*Math.PI*3956;// ((subtended angle in degrees)/360)*2*pi*radius)
+										//where radius of the earth is 3956 miles
+	if(unit=='K'){dist=dist*1.609344;}//convert miles to km
+	if(unit=='N'){dist=dist*0.8684;}//convert to nautical miles
+	return dist;
+}
+
+
+
+
+
+
+
+
+//					****** Switches functions ******
 
 //Earthquakes switch
 var EQbox = document.getElementById("EQbox");	
@@ -215,13 +293,30 @@ function currentLocation()	{
 	if (locationBox.checked){
 		trackLocation();
 	} else {
-		navigator.geolocation.clearWatch(id);
+		navigator.geolocation.clearWatch(trackLOC);
 		mymap.removeLayer(currentLocationLyr);
 		firstTime = true;
 		autoPan = false;
 		
 	}
 }
+
+//alert dist switch
+var distBox = document.getElementById("distBox");
+function distAlert(){
+	if (distBox.checked){
+		if (!locationBox.checked){
+			locationBox.checked = true;
+			currentLocation();
+		}
+		trackDistance();
+	} else {
+		navigator.geolocation.clearWatch(watch_dist);
+		firstTimeDist = true;
+		
+	}
+}
+
 
 
 //UCL switch
@@ -283,4 +378,5 @@ function panToCurrentLoc(){
 		trackLocation();
 	}
 }
+
 
